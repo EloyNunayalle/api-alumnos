@@ -1,13 +1,17 @@
+import json
 import boto3
 
 def lambda_handler(event, context):
-    # Entrada (json)
-    tenant_id = event['tenant_id']
-    alumno_id = event['alumno_id']
-    alumno_datos = event['alumno_datos']
-    # Proceso
+    # Convertir body JSON a diccionario
+    body = json.loads(event['body'])
+
+    tenant_id = body['tenant_id']
+    alumno_id = body['alumno_id']
+    alumno_datos = body['alumno_datos']
+
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('t_alumnos')
+
     response = table.update_item(
         Key={
             'tenant_id': tenant_id,
@@ -19,8 +23,8 @@ def lambda_handler(event, context):
         },
         ReturnValues="UPDATED_NEW"
     )
-    # Salida (json)
+
     return {
         'statusCode': 200,
-        'response': response
+        'body': json.dumps({'message': 'Alumno actualizado', 'data': response})
     }
