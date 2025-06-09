@@ -1,20 +1,25 @@
+import json
 import boto3
 
 def lambda_handler(event, context):
-    # Entrada (json)
-    tenant_id = event['tenant_id']
-    alumno_id = event['alumno_id']
-    # Proceso
+    body = event['body'] if isinstance(event['body'], dict) else json.loads(event['body'])
+
+    tenant_id = body['tenant_id']
+    alumno_id = body['alumno_id']
+
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('t_alumnos')
+
     response = table.get_item(
         Key={
             'tenant_id': tenant_id,
             'alumno_id': alumno_id
         }
     )
-    # Salida (json)
+
+    item = response.get('Item', {})
+
     return {
         'statusCode': 200,
-        'response': response
+        'body': json.dumps({'message': 'Alumno encontrado', 'alumno': item})
     }
