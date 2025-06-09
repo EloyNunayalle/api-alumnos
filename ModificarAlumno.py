@@ -2,8 +2,11 @@ import json
 import boto3
 
 def lambda_handler(event, context):
-    # Convertir body JSON a diccionario
-    body = json.loads(event['body'])
+    # Si el body ya es un dict, úsalo directamente:
+    if isinstance(event.get('body'), dict):
+        body = event['body']
+    else:
+        body = json.loads(event['body'])  # solo si viene como string
 
     tenant_id = body['tenant_id']
     alumno_id = body['alumno_id']
@@ -28,3 +31,4 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'body': json.dumps({'message': 'Alumno actualizado', 'data': response})
     }
+
