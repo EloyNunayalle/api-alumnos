@@ -2,7 +2,6 @@ import json
 import boto3
 
 def lambda_handler(event, context):
-    # Si el body ya es un dict, úsalo directamente:
     if isinstance(event.get('body'), dict):
         body = event['body']
     else:
